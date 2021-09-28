@@ -1,146 +1,127 @@
-import * as utils from "./utils.js";
+import * as drawing from "./drawingCanvas.js";
+import * as display from "./displayCanvas.js";
 
-let ctx, canvas;
-const canvasWidth = 600;
-const canvasHeight = 600;
+const drawingSize = { width: 64, height: 64 };
+const displaySize = { width: 600, height: 600 };
+
+let drawingCanvas;
+let displayCanvas;
 
 let mousePos = {
-    x: 0,
-    y: 0
+    x: -1,
+    y: -1
 };
 
-let mousePosLastFrame = {
-    x: 0,
-    y: 0
-}
+let lastMousePos;
 
-let mouseDownPos = {};
-let mouseUpPos = {};
-let isMouseDown = false;
-
-const imageSize = { x: 32, y: 32 };
-let pixels = [];
+let mouseDown = false;
 
 const init = () => {
-    canvas = document.querySelector('canvas');
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    ctx = canvas.getContext("2d");
+    // Setup canvases
+    drawingCanvas = document.querySelector("#rawimage");
+    drawing.initialize(drawingSize.width, drawingSize.height, drawingCanvas);
 
-    canvas.onmousemove = onMouseMove;
-    canvas.onmousedown = onMouseDown;
-    canvas.onmouseup = onMouseUp;
+    displayCanvas = document.querySelector("#display");
+    display.initialize(displaySize.width, displaySize.height, displayCanvas);
 
-    generateImage();
+    // Setup listeners
+    document.onmousedown = onMouseDown;
+    document.onmouseup = onMouseUp;
+    document.onmousemove = onMouseMove;
+
     loop();
-}
+};
 
 const loop = () => {
     requestAnimationFrame(loop);
-    clear();
-    drawImage();
 
-    if (isMouseDown) {
-        let pixelPos = getPixelPos(mousePos);
-        setPixel(pixelPos, "red");
-        setPixels(mousePosLastFrame, mousePos, "red");
+    display.drawHiddenCanvas(drawing.canvas);
+
+    if (lastMousePos != null && mouseDown) {
+        let mousePixelPos = convertPosFromSizeToSize(mousePos.x, mousePos.y, displaySize, drawingSize);
+        let lastMousePixelPos = convertPosFromSizeToSize(lastMousePos.x, lastMousePos.y, displaySize, drawingSize);
+
+        drawing.setPixel(mousePixelPos.x, mousePixelPos.y, { r: 255, g: 0, b: 0, a: 255 });
+        drawing.setPixels(mousePixelPos.x, mousePixelPos.y, lastMousePixelPos.x, lastMousePixelPos.y, { r: 255, g: 0, b: 0, a: 255 });
     }
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(mousePos.x - 2.5, mousePos.y - 2.5, 5, 5);
+    lastMousePos = mousePos;
+};
 
-    setPixels({ x: 0, y: 0 }, { x: 100, y: 100 }, "red");
+const onMouseDown = (e) => {
+    mouseDown = true;
+};
 
-    mousePosLastFrame = mousePos;
-}
-
-const clear = () => {
-    ctx.save();
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-    ctx.restore();
-}
+const onMouseUp = (e) => {
+    mouseDown = false;
+};
 
 const onMouseMove = (e) => {
-    const rect = e.target.getBoundingClientRect();
+    const rect = displayCanvas.getBoundingClientRect();
 
     mousePos = {
         x: e.clientX - rect.x,
         y: e.clientY - rect.y
     };
-}
+};
 
-const onMouseDown = (e) => {
-    mouseDownPos = mousePos;
-    mouseUpPos = null;
-    isMouseDown = true;
-}
-
-const onMouseUp = (e) => {
-    mouseUpPos = mousePos;
-    isMouseDown = false;
-}
-
-const generateImage = () => {
-    for (let i = 0; i < imageSize.x; i++) {
-        for (let j = 0; j < imageSize.y; j++) {
-            if (!pixels[i])
-                pixels[i] = [];
-
-            pixels[i][j] = "white";
-        }
-    }
-}
-
-const getPixelPos = (pos) => {
+const convertPosFromSizeToSize = (x, y, displaySize, drawingSize) => {
     return {
-        x: Math.floor((pos.x / canvasWidth) * imageSize.x),
-        y: Math.floor((pos.y / canvasHeight) * imageSize.y)
+        x: Math.floor((x / displaySize.width) * drawingSize.width),
+        y: Math.floor((y / displaySize.height) * drawingSize.height)
     };
-}
-const getCanvasPos = (pos) => {
-    return {
-        x: Math.round((pos.x / imageSize.x) * canvasWidth),
-        y: Math.round((pos.y / imageSize.y) * canvasWidth)
-    }
-}
-
-const setPixel = (pos, color) => {
-    if (pos.x < 0 || pos.x >= imageSize.x)
-        return;
-    if (pos.y < 0 || pos.x >= imageSize.y)
-        return;
-
-    pixels[pos.x][pos.y] = color;
-}
-
-const setPixels = (pos0, pos1, color) => {
-    pos0 = getPixelPos(pos0);
-    pos1 = getPixelPos(pos1);
-
-    let dirX = pos1.x - pos0.x;
-    let dirY = pos1.y - pos0.y;
-
-    while (pos0.x != pos1.x && pos0.y != pos1.y) {
-        console.dir(pos0.x + " | " + pos0.y);
-        setPixel(pos0, color);
-        pos0.x += dirX;
-        pos0.y += dirY;
-    }
-}
-
-const drawImage = () => {
-    let pixelSize = { x: canvasWidth / imageSize.x, y: canvasHeight / imageSize.y };
-    for (let i = 0; i < imageSize.x; i++) {
-        for (let j = 0; j < imageSize.y; j++) {
-            let pixelPos = getCanvasPos({ x: i, y: j });
-            let pixel = pixels[i][j];
-            ctx.save();
-            ctx.fillStyle = pixel;
-            ctx.fillRect(pixelPos.x, pixelPos.y, pixelSize.x, pixelSize.y);
-            ctx.restore();
-        }
-    }
-}
+};
 
 export { init }
+
+
+/*
+--- Code Plan ---
+loader.js
+    -onload
+        - load any potential images and such there likely wont be any
+            other then getting the rooms image from the server.
+        - call mains init
+main.js
+    - init
+        - Setup the canvases
+            - Hidden (this is where actual painting occures)
+            - Display (this is the scaled up version of the Hidden)
+                - The two canvases are seperate so that I can use smaller resolutions
+                    with the painting. By having two seperate it should be a little
+                    bit easier to handle sending data back and forth from the server.
+                    From the client perspective its simply easier to set exact
+                    pixel stuff using a seperate canvas. It also allows for good looking
+                    transparency.
+        - Setup listeners
+        - Setup the empty canvas (this setting will likely come from the)
+    - loop
+        - call draw on the display canvas
+        - check if the mouse is down && if it has moved
+            - if it is do a set pixel and set pixels between its last position and current
+        - update the lastMousePosition
+
+drawingCanvas.js
+    - initialize (width, height, drawingCanvas)
+        - Setup the drawing canvas (the hidden one) and setup the image data and data objects
+    - setPixel (x, y, color)
+        - Convert the x and y to and index on the data object.
+        - Sets a pixel on the data object.
+    - setPixels(x0, y0, x1, x0, color)
+        - Convert the two positions and use an algoritm to set all pixels between them.
+            - Might be able to simply use ctx.lineTo
+    - Exports initialize, setPixel, setPixels, and drawingCanvas
+
+displayCanvas.js
+    - initialize (width, height, displayCanvas)
+        - just setup the canvas
+    - draw
+        - have it draw the hidden canvas zoomed up a bit, could potentially have some magnification stuff.
+
+    - exports initialize and draw
+
+
+--- References ---
+    - https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+        - Much of the logic for zoom and setting pixels came from here
+*/
