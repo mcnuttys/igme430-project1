@@ -105,6 +105,8 @@ const updateHistoryVisual = () => {
         changeListOL.append(changeText);
     }
 
+    changeListOL.scrollTop = changeListOL.scrollHeight;
+
     for (let i = redoStack.length - 1; i >= 0; i--) {
         const changeText = document.createElement('li');
         let color = redoStack[i].changes[0].toColor;
