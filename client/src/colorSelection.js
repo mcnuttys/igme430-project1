@@ -1,11 +1,12 @@
 import * as utils from "./utils.js";
 
+let colorSelector;
 const selectedColor = { r: 255, g: 255, b: 255, a: 255 };
 
 const initialize = () => {
-    const colorPicker = document.querySelector("#colorPicker");
+    colorSelector = document.querySelector("#colorPicker");
 
-    colorPicker.onchange = colorPickerChange;
+    colorSelector.onchange = colorPickerChange;
 }
 
 const colorPickerChange = (e) => {
@@ -13,15 +14,20 @@ const colorPickerChange = (e) => {
     setSelectedColor(color.r, color.g, color.b, color.a);
 }
 
+const getSelectedColor = () => {
+    return selectedColor;
+}
+
+const setSelectorColor = (color) => {
+    setSelectedColor(color.r, color.g, color.b, color.a);
+    colorSelector.value = utils.rgbToHex(selectedColor);
+}
+
 const setSelectedColor = (r, g, b, a) => {
     selectedColor.r = r;
     selectedColor.g = g;
     selectedColor.b = b;
     selectedColor.a = a;
-}
-
-const getSelectedColor = () => {
-    return selectedColor;
 }
 
 const asColor = (r, g, b, a = 255) => {
@@ -33,4 +39,4 @@ const asColor = (r, g, b, a = 255) => {
     }
 }
 
-export { initialize, getSelectedColor, asColor };
+export { initialize, getSelectedColor, setSelectorColor, asColor };

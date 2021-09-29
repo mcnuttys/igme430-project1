@@ -67,6 +67,14 @@ const setPixelI = (i, color) => {
     ctx.putImageData(canvasData, 0, 0);
 };
 
+const getPixel = (x, y) => {
+    if ((x < 0 || x >= size.width) || (y < 0 || y >= size.height))
+        return;
+
+    let i = convertToPixelIndex(x, y, size.width);
+    return colorSelection.asColor(pixelData[i], pixelData[i + 1], pixelData[i + 2], pixelData[i + 3]);
+}
+
 // From https://stackoverflow.com/questions/4672279/bresenham-algorithm-in-javascript with some tweaks
 const setPixels = (x0, y0, x1, y1, color) => {
     let dx = Math.abs(x1 - x0);
@@ -97,4 +105,4 @@ const convertToPixelIndex = (x, y, width) => {
     return y * (width * 4) + x * 4;
 };
 
-export { initialize, setPixel, setPixelI, setPixels, canvas };
+export { initialize, setPixel, setPixelI, getPixel, setPixels, canvas };

@@ -1,8 +1,9 @@
+import * as color from "./colorSelection.js";
+import * as changes from "./changeHistory.js";
 import * as drawing from "./drawingCanvas.js";
 import * as display from "./displayCanvas.js";
-import * as color from "./colorSelection.js";
+import * as tools from "./tools.js"
 import * as utils from "./utils.js";
-import * as changes from "./changeHistory.js";
 
 const drawingSize = { width: 64, height: 64 };
 const displaySize = { width: 600, height: 600 };
@@ -30,11 +31,16 @@ const init = () => {
     // Setup others
     color.initialize();
     changes.initialize();
+    tools.initialize();
 
     // Setup listeners
     displayCanvas.onmousedown = onMouseDown;
     document.onmouseup = onMouseUp;
     document.onmousemove = onMouseMove;
+
+    displayCanvas.touchstart = onMouseDown;
+    document.touchend = onMouseUp;
+    document.touchmove = onMouseMove;
 
     loop();
 };
@@ -44,16 +50,12 @@ const loop = () => {
 
     display.drawHiddenCanvas(drawing.canvas);
 
-    if (lastMousePos != null && mouseDown) {
-        let mousePixelPos = convertPosFromSizeToSize(mousePos.x, mousePos.y, displaySize, drawingSize);
-        let lastMousePixelPos = convertPosFromSizeToSize(lastMousePos.x, lastMousePos.y, displaySize, drawingSize);
-
-        drawing.setPixels(mousePixelPos.x, mousePixelPos.y, lastMousePixelPos.x, lastMousePixelPos.y, color.getSelectedColor());
-        drawing.setPixel(mousePixelPos.x, mousePixelPos.y, color.getSelectedColor());
+    if (mouseDown) {
+        tools.useTool(mousePos, lastMousePos, displaySize, drawingSize);
     }
 
-    if(!mouseDown && changes.notCommited) {
-        changes.commitChanges();
+    if (!mouseDown && changes.notCommited) {
+        changes.commitChanges(tools.changeMessage);
     }
 
     lastMousePos = mousePos;
@@ -73,13 +75,6 @@ const onMouseMove = (e) => {
     mousePos = {
         x: e.clientX - rect.x,
         y: e.clientY - rect.y
-    };
-};
-
-const convertPosFromSizeToSize = (x, y, displaySize, drawingSize) => {
-    return {
-        x: Math.floor((x / displaySize.width) * drawingSize.width),
-        y: Math.floor((y / displaySize.height) * drawingSize.height)
     };
 };
 
@@ -159,6 +154,13 @@ changeHistory.js
         - pulls from the redo stack and goes back through each change setting each pixel
             index to its to color
         - saves the pulled change onto the undoStack
+
+tools.js
+    - initialize
+        - Setup all the different tools and their listeners
+    - useTool(mousePos)
+        - Uses whatever tool at specified position,
+            this is also where the history is done now
 
 --- References ---
     - https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas

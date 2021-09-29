@@ -11,6 +11,10 @@ let notCommited;
 let isUndoing;
 let isRedoing;
 
+let totalChanges = 0;
+
+const SAVED_MAX = 1000;
+
 const initialize = () => {
     const historyDiv = document.querySelector("#historyHolder");
     changeListOL = historyDiv.querySelector("#changes");
@@ -22,7 +26,7 @@ const initialize = () => {
     redoButton.onclick = redoChange;
 }
 
-const addChange = (pixelIndex, toColor, fromColor) => {
+const addPixelChange = (pixelIndex, toColor, fromColor) => {
     if (isUndoing)
         return;
 
@@ -34,11 +38,14 @@ const addChange = (pixelIndex, toColor, fromColor) => {
     notCommited = true;
 }
 
-const commitChanges = () => {
+const commitChanges = (message) => {
     notCommited = false;
 
-    undoStack.push({ time: Date.now(), changes: currentChanges });
+    undoStack.push({ time: Date.now(), changes: currentChanges, changeNumber: totalChanges += 1, message });
     currentChanges = [];
+
+    if (undoStack.length > SAVED_MAX)
+        undoStack.shift();
 
     updateHistoryVisual();
 }
@@ -61,6 +68,7 @@ const undoChange = () => {
         drawing.setPixelI(change.pixelIndex, change.fromColor);
     }
 
+    totalChanges--;
     isUndoing = false;
     updateHistoryVisual();
 }
@@ -83,8 +91,8 @@ const redoChange = () => {
         drawing.setPixelI(change.pixelIndex, change.toColor);
     }
 
+    totalChanges++;
     isRedoing = false;
-
     updateHistoryVisual();
 }
 
@@ -94,11 +102,8 @@ const updateHistoryVisual = () => {
     }
 
     for (let i = 0; i < undoStack.length; i++) {
-        const changeText = document.createElement('li');
-        let c = undoStack[i].changes[0].toColor;
-        changeText.innerText = `Set Pixels to ${utils.rgbToHex(c)}`;
-        changeText.style.color = utils.rgbToHex(c);
-
+        const changeText = document.createElement('p');
+        changeText.innerText = `${undoStack[i].changeNumber}. ${undoStack[i].message}`;
         if (i === undoStack.length - 1)
             changeText.style.border = '1px solid white';
 
@@ -108,14 +113,12 @@ const updateHistoryVisual = () => {
     changeListOL.scrollTop = changeListOL.scrollHeight;
 
     for (let i = redoStack.length - 1; i >= 0; i--) {
-        const changeText = document.createElement('li');
-        let color = redoStack[i].changes[0].toColor;
-        changeText.innerText = `Set Pixels to ${utils.rgbToHex(color)}`;
-        changeText.style.color = utils.rgbToHex(color);
+        const changeText = document.createElement('p');
+        changeText.innerText = `${redoStack[i].changeNumber}. ${redoStack[i].message}`;
         changeText.style.fontStyle = 'italic';
 
         changeListOL.append(changeText);
     }
 }
 
-export { initialize, addChange, commitChanges, undoChange, redoChange, notCommited }
+export { initialize, addPixelChange as addChange, commitChanges, undoChange, redoChange, notCommited }

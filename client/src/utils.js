@@ -8,6 +8,13 @@ const clamp = (value, min, max) => {
     return value;
 }
 
+const convertPosFromSizeToSize = (x, y, displaySize, drawingSize) => {
+    return {
+        x: Math.floor((x / displaySize.width) * drawingSize.width),
+        y: Math.floor((y / displaySize.height) * drawingSize.height)
+    };
+};
+
 // YOINKED off internet: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 const hexToRgb = (hex) => {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -26,4 +33,4 @@ const rgbToHex = (rgb) => {
     return `#${r}${g}${b}`;
 }
 
-export { clamp, hexToRgb, rgbToHex };
+export { clamp, hexToRgb, rgbToHex, convertPosFromSizeToSize };
