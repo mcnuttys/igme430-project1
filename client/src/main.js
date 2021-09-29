@@ -1,5 +1,6 @@
 import * as drawing from "./drawingCanvas.js";
 import * as display from "./displayCanvas.js";
+import * as color from "./colorSelection.js";
 
 const drawingSize = { width: 64, height: 64 };
 const displaySize = { width: 600, height: 600 };
@@ -24,6 +25,9 @@ const init = () => {
     displayCanvas = document.querySelector("#display");
     display.initialize(displaySize.width, displaySize.height, displayCanvas);
 
+    // Setup others
+    color.initialize();
+
     // Setup listeners
     document.onmousedown = onMouseDown;
     document.onmouseup = onMouseUp;
@@ -41,8 +45,8 @@ const loop = () => {
         let mousePixelPos = convertPosFromSizeToSize(mousePos.x, mousePos.y, displaySize, drawingSize);
         let lastMousePixelPos = convertPosFromSizeToSize(lastMousePos.x, lastMousePos.y, displaySize, drawingSize);
 
-        drawing.setPixel(mousePixelPos.x, mousePixelPos.y, { r: 255, g: 0, b: 0, a: 255 });
-        drawing.setPixels(mousePixelPos.x, mousePixelPos.y, lastMousePixelPos.x, lastMousePixelPos.y, { r: 255, g: 0, b: 0, a: 255 });
+        drawing.setPixels(mousePixelPos.x, mousePixelPos.y, lastMousePixelPos.x, lastMousePixelPos.y, color.getSelectedColor());
+        //drawing.setPixel(mousePixelPos.x, mousePixelPos.y, color.getSelectedColor());
     }
 
     lastMousePos = mousePos;
@@ -72,7 +76,7 @@ const convertPosFromSizeToSize = (x, y, displaySize, drawingSize) => {
     };
 };
 
-export { init }
+export { init };
 
 
 /*
@@ -82,6 +86,7 @@ loader.js
         - load any potential images and such there likely wont be any
             other then getting the rooms image from the server.
         - call mains init
+
 main.js
     - init
         - Setup the canvases
@@ -117,9 +122,16 @@ displayCanvas.js
         - just setup the canvas
     - draw
         - have it draw the hidden canvas zoomed up a bit, could potentially have some magnification stuff.
-
     - exports initialize and draw
 
+colorSelection.js
+    - initialize
+    - GetColor()
+        - Returns the selected color
+    - AsColor(r, g, b)
+    - AsColor(r, g, b, a)
+        - Converts given R, G, B, A into a color object
+        - (as an aside this is not how overloading methods works but whatever)
 
 --- References ---
     - https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
