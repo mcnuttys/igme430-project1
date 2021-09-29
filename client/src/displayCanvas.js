@@ -23,6 +23,12 @@ const initialize = (width, height, _canvas) => {
 // Draw a zoomed up version of the hidden canvas...
 const drawHiddenCanvas = (hiddenCanvas) => {
     ctx.clearRect(0, 0, size.width, size.height);
+    
+    ctx.save();
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, size.width, size.height);
+    ctx.restore();
+
     ctx.drawImage(hiddenCanvas, 0, 0, hiddenCanvas.width, hiddenCanvas.height, 0, 0, size.width, size.height);
 };
 

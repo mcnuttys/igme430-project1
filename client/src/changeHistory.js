@@ -116,6 +116,7 @@ const updateHistoryVisual = () => {
         const changeText = document.createElement('p');
         changeText.innerText = `${redoStack[i].changeNumber}. ${redoStack[i].message}`;
         changeText.style.fontStyle = 'italic';
+        changeText.style.color = '#aaaaaa';
 
         changeListOL.append(changeText);
     }

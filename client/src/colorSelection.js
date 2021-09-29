@@ -1,7 +1,7 @@
 import * as utils from "./utils.js";
 
 let colorSelector;
-const selectedColor = { r: 255, g: 255, b: 255, a: 255 };
+const selectedColor = { r: 0, g: 0, b: 0, a: 255 };
 
 const initialize = () => {
     colorSelector = document.querySelector("#colorPicker");
