@@ -1,6 +1,8 @@
 import * as drawing from "./drawingCanvas.js";
 import * as display from "./displayCanvas.js";
 import * as color from "./colorSelection.js";
+import * as utils from "./utils.js";
+import * as changes from "./changeHistory.js";
 
 const drawingSize = { width: 64, height: 64 };
 const displaySize = { width: 600, height: 600 };
@@ -27,9 +29,10 @@ const init = () => {
 
     // Setup others
     color.initialize();
+    changes.initialize();
 
     // Setup listeners
-    document.onmousedown = onMouseDown;
+    displayCanvas.onmousedown = onMouseDown;
     document.onmouseup = onMouseUp;
     document.onmousemove = onMouseMove;
 
@@ -46,7 +49,11 @@ const loop = () => {
         let lastMousePixelPos = convertPosFromSizeToSize(lastMousePos.x, lastMousePos.y, displaySize, drawingSize);
 
         drawing.setPixels(mousePixelPos.x, mousePixelPos.y, lastMousePixelPos.x, lastMousePixelPos.y, color.getSelectedColor());
-        //drawing.setPixel(mousePixelPos.x, mousePixelPos.y, color.getSelectedColor());
+        drawing.setPixel(mousePixelPos.x, mousePixelPos.y, color.getSelectedColor());
+    }
+
+    if(!mouseDown && changes.notCommited) {
+        changes.commitChanges();
     }
 
     lastMousePos = mousePos;
@@ -132,6 +139,26 @@ colorSelection.js
     - AsColor(r, g, b, a)
         - Converts given R, G, B, A into a color object
         - (as an aside this is not how overloading methods works but whatever)
+
+changeHistory.js
+    - initialize
+        - gets the dom for the history holder, which has the undo, redo buttons
+        - Also sets up the changes stack
+    - addChange (pixelIndex, toColor, fromColor)
+        - saves the pixelIndex, color its being changed to, and color changed from
+            to the currentChanges object
+    - commitChanges
+        - adds and clears the current changes object
+        - clears redo stack
+        - (could possibly be where my server tie-in is)
+    - undoChange
+        - removes the most recent change from the changes stack and goes back through
+            setting each pixel index to its from color
+        - saves the pulled change onto the redoStack
+    - redoChange
+        - pulls from the redo stack and goes back through each change setting each pixel
+            index to its to color
+        - saves the pulled change onto the undoStack
 
 --- References ---
     - https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas

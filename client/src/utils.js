@@ -19,4 +19,11 @@ const hexToRgb = (hex) => {
     } : null;
 }
 
-export { clamp, hexToRgb };
+const rgbToHex = (rgb) => {
+    let r = ("00" + rgb.r.toString(16)).slice(-2);
+    let g = ("00" + rgb.g.toString(16)).slice(-2);
+    let b = ("00" + rgb.b.toString(16)).slice(-2);
+    return `#${r}${g}${b}`;
+}
+
+export { clamp, hexToRgb, rgbToHex };

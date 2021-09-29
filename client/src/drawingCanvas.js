@@ -1,3 +1,6 @@
+import * as changes from "./changeHistory.js";
+import * as colorSelection from "./colorSelection.js";
+
 let canvas;
 let ctx;
 
@@ -38,6 +41,24 @@ const setPixel = (x, y, color) => {
         return;
 
     let i = convertToPixelIndex(x, y, size.width);
+    changes.addChange(
+        i,
+        color,
+        colorSelection.asColor(pixelData[i], pixelData[i + 1], pixelData[i + 2], pixelData[i + 3])
+    );
+
+    pixelData[i] = color.r;
+    pixelData[i + 1] = color.g;
+    pixelData[i + 2] = color.b;
+    pixelData[i + 3] = color.a;
+
+    ctx.putImageData(canvasData, 0, 0);
+};
+
+const setPixelI = (i, color) => {
+    if (i < 0 || i >= pixelData.length)
+        return;
+
     pixelData[i] = color.r;
     pixelData[i + 1] = color.g;
     pixelData[i + 2] = color.b;
@@ -56,9 +77,9 @@ const setPixels = (x0, y0, x1, y1, color) => {
     let err = dx - dy;
 
     while (true) {
-        setPixel(x0, y0, color);
-
         if (x0 === x1 && y0 === y1) break;
+
+        setPixel(x0, y0, color);
 
         let e2 = 2 * err;
         if (e2 > -dy) {
@@ -76,4 +97,4 @@ const convertToPixelIndex = (x, y, width) => {
     return y * (width * 4) + x * 4;
 };
 
-export { initialize, setPixel, setPixels, canvas };
+export { initialize, setPixel, setPixelI, setPixels, canvas };
