@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const index = fs.readFileSync(`${__dirname}/../hosted/client.html`);
 const css = fs.readFileSync(`${__dirname}/../hosted/styles.css`);
-const bundle = fs.readFileSync(`${__dirname}/../hosted/DONT_EDIT_bundle.js`);
+const bundle = fs.readFileSync(`${__dirname}/../dist/DONT_EDIT_main.js`);
 
 const getIndex = (request, response) => {
   console.dir("getting index");
