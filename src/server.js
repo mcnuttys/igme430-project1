@@ -7,7 +7,7 @@ const htmlHandler = require('./htmlResponses.js');
 
 const urlStruct = {
     '/': htmlHandler.getIndex,
-    '/style.css': htmlHandler.getCSS,
+    '/styles.css': htmlHandler.getCSS,
     '/bundle.js': htmlHandler.getBundle
 };
 
