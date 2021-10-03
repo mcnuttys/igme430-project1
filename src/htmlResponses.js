@@ -5,7 +5,6 @@ const css = fs.readFileSync(`${__dirname}/../hosted/styles.css`);
 const bundle = fs.readFileSync(`${__dirname}/../dist/DONT_EDIT_main.js`);
 
 const getIndex = (request, response) => {
-  console.dir("getting index");
   response.writeHead(200, { 'Content-Type': 'text/html' });
   response.write(index);
   response.end();

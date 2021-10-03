@@ -1,6 +1,11 @@
 import * as page from "./pageHandler.js";
+import * as colorSelection from "./colorSelection.js";
+import * as utils from "./utils";
 
 let currentRoomId;
+let playerColor = "#FF00FF";
+let playerId = 0;
+let playerList = [];
 
 const sendGet = (url, responseHandler) => {
     const xhr = new XMLHttpRequest();
@@ -53,6 +58,10 @@ const createRoomHandler = (xhr) => {
 
     switch (xhr.status) {
         case 201:
+            currentRoomId = obj.room.id;
+            playerColor = utils.rgbToHex(colorSelection.asColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255));
+            playerId = obj.playerId;
+
             page.onJoinedRoom(obj.room);
             break;
         case 400:
@@ -67,6 +76,55 @@ const createRoomHandler = (xhr) => {
     }
 }
 
+const updatePlayer = (mousePos) => {
+    sendPost('/updatePlayer', updatePlayerHandler, 'application/x-www-form-urlencoded',
+        `roomId=${currentRoomId}&playerId=${playerId}&mousePosX=${mousePos.x}&mousePosY=${mousePos.y}&color=${playerColor}`
+    );
+}
+
+const updatePlayerHandler = (xhr) => {
+    // Pretty much do nothing, just dont want to see an error
+    switch (xhr.status) {
+        case 204:
+            // The player position updated sucessfully!
+            break;
+        case 400:
+            console.error("The data sent to the server was incorrect!");
+            break;
+        case 404:
+            console.error(obj.message);
+            break;
+        default:
+            console.error("I dont know what the fork happened here!");
+            break;
+    }
+}
+
+const getPlayerList = () => {
+    sendGet(`/getPlayers?roomId=${currentRoomId}`, handleGetPlayers);
+}
+
+const handleGetPlayers = (xhr) => {
+    const obj = JSON.parse(xhr.response);
+
+    switch (xhr.status) {
+        case 200:
+            playerList = [];
+
+            playerList = obj.players;
+            break;
+        case 400:
+            console.error("The data sent to the server was incorrect!");
+            break;
+        case 404:
+            console.error(obj.message);
+            break;
+        default:
+            console.error("I dont know what the fork happened here!");
+            break;
+    }
+}
+
 const joinRoom = (id) => {
     sendGet("/joinRoom?id=" + id, joinRoomHandler);
 }
@@ -77,6 +135,8 @@ const joinRoomHandler = (xhr) => {
     switch (xhr.status) {
         case 200:
             currentRoomId = obj.room.id;
+            playerColor = utils.rgbToHex(colorSelection.asColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255));
+            playerId = obj.playerId;
 
             page.onJoinedRoom(obj.room);
             break;
@@ -92,4 +152,4 @@ const joinRoomHandler = (xhr) => {
     }
 }
 
-export { getRoomList, createRoom, joinRoom };
+export { getRoomList, createRoom, joinRoom, updatePlayer, getPlayerList, playerId, playerColor, playerList };

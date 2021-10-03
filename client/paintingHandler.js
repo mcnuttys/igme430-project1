@@ -2,8 +2,8 @@ import * as color from "./colorSelection.js";
 import * as changes from "./changeHistory.js";
 import * as drawing from "./drawingCanvas.js";
 import * as display from "./displayCanvas.js";
-import * as tools from "./tools.js"
-import * as utils from "./utils.js";
+import * as tools from "./tools.js";
+import * as server from "./serverHandler.js"
 
 let drawingSize = { width: 64, height: 64 };
 let displaySize = { width: 600, height: 600 };
@@ -19,6 +19,8 @@ let mousePos = {
 let lastMousePos;
 
 let mouseDown = false;
+
+let mouseTimer = 0.1;
 
 const initialize = (canvasSize) => {
     drawingSize = canvasSize;
@@ -59,6 +61,16 @@ const loop = () => {
     if (!mouseDown && changes.notCommited) {
         changes.commitChanges(tools.changeMessage);
     }
+
+    mouseTimer -= 1 / 60;
+    if (mouseTimer <= 0) {
+        mouseTimer = 0.1;
+        server.updatePlayer(mousePos);
+        server.getPlayerList();
+    }
+
+    display.drawMouse(mousePos.x, mousePos.y, server.playerColor);
+    display.drawPlayers(server.playerList, server.playerId);
 
     lastMousePos = mousePos;
 };

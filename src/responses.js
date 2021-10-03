@@ -66,6 +66,7 @@ const createRoom = (request, response, body) => {
     const room = roomManager.createRoom(body.roomName, body.canvasSize);
     responseJSON.room = room;
     responseJSON.id = "createRoom";
+    responseJSON.playerId = roomManager.addPlayer(room.id);
 
     return respondJSON(request, response, 201, responseJSON);
 }
@@ -92,13 +93,66 @@ const joinRoom = (request, response, parsedUrl) => {
 
     responseJSON.room = room;
     responseJSON.id = "joinedRoom";
+    responseJSON.playerId = roomManager.addPlayer(room.id);
 
     respondJSON(request, response, 200, responseJSON)
+}
+
+const updatePlayer = (request, response, body) => {
+    const responseJSON = {
+        message: "Sucessfully got player positions!"
+    }
+
+    if (body.roomId === '') {
+        responseJSON.message = "Bad Room ID!";
+        responseJSON.id = "badRequest";
+        return respondJSON(request, response, 400, responseJSON);
+    }
+
+    if (body.playerId === '') {
+        responseJSON.message = "Bad Room ID!";
+        responseJSON.id = "badRequest";
+        return respondJSON(request, response, 400, responseJSON);
+    }
+
+    const updatePlayer = roomManager.updatePlayerPosition(body.roomId, body.playerId, body.mousePosX, body.mousePosY, body.color);
+
+    if (updatePlayer.type === 404) {
+        responseJSON.message = updatePlayer.message;
+        responseJSON.id = "notFound";
+
+        return respondJSON(request, response, 404, responseJSON);
+    }
+
+    return respondJSONMeta(request, response, 204);
+}
+
+const getPlayers = (request, response, parsedUrl) => {
+    let query = parsedUrl.query;
+
+    const roomId = query.roomId;
+    const responseJSON = {
+        message: "successfully pulled the playerlist"
+    };
+
+    if (roomId === '') {
+        responseJSON.message = "invalid id";
+        responseJSON.id = "badRequest";
+
+        return respondJSON(request, response, 400, responseJSON);
+    }
+
+    responseJSON.id = "getPlayerList";
+    responseJSON.players = roomManager.getPlayerList(roomId);
+
+    return respondJSON(request, response, 200, responseJSON);
 }
 
 module.exports = {
     notFound,
     createRoom,
     getRooms,
-    joinRoom
+    joinRoom,
+    updatePlayer,
+    getPlayers
 };

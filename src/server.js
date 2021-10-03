@@ -6,7 +6,6 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const htmlHandler = require('./htmlResponses.js');
 const responseHandler = require('./responses.js');
-const { parse } = require('path');
 
 const urlStruct = {
     '/': htmlHandler.getIndex,
@@ -14,7 +13,10 @@ const urlStruct = {
     '/bundle.js': htmlHandler.getBundle,
     '/roomList': responseHandler.getRooms,
     '/createRoom': responseHandler.createRoom,
-    '/joinRoom': responseHandler.joinRoom
+    '/joinRoom': responseHandler.joinRoom,
+    '/updatePlayer': responseHandler.updatePlayer,
+    '/getPlayers': responseHandler.getPlayers,
+    notFound: responseHandler.notFound,
 };
 
 const postHandler = (request, response, parsedUrl) => {
@@ -36,20 +38,21 @@ const postHandler = (request, response, parsedUrl) => {
         const bodyString = Buffer.concat(body).toString();
         const bodyParams = query.parse(bodyString);
 
-        urlStruct[parsedUrl.pathname](request, res, bodyParams);
+        urlStruct[parsedUrl.pathname](request, response, bodyParams);
     });
 }
 
 const onRequest = (request, response) => {
     const parsedUrl = url.parse(request.url, true);
-    console.dir(parsedUrl.pathname);
-
-    if (request.method === "POST") {
-        postHandler(request, response, parsedUrl);
-    } else {
-        if (urlStruct[parsedUrl.pathname]) {
+    
+    if (urlStruct[parsedUrl.pathname]) {
+        if (request.method === "POST") {
+            postHandler(request, response, parsedUrl);
+        } else {
             urlStruct[parsedUrl.pathname](request, response, parsedUrl);
         }
+    } else {
+        urlStruct.notFound(request, response);
     }
 };
 
