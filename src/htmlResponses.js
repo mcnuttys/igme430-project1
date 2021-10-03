@@ -25,5 +25,5 @@ const getBundle = (request, response) => {
 module.exports = {
   getIndex,
   getCSS,
-  getBundle
+  getBundle,
 };

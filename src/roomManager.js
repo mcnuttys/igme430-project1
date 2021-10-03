@@ -2,78 +2,72 @@ const rooms = {
 
 };
 
-const createRoom = (roomName, canvasSize) => {
-    let room = {
-        id: getRandomId(),
-        name: roomName,
-        canvasSize: canvasSize,
-        players: []
-    };
+const getRandomId = () => Math.round(Math.random() * 100000);
 
-    rooms[room.id] = room;
-    return room;
-}
+const createRoom = (roomName, canvasSize) => {
+  const room = {
+    id: getRandomId(),
+    name: roomName,
+    canvasSize,
+    players: [],
+  };
+
+  rooms[room.id] = room;
+  return room;
+};
 
 const getRoom = (id) => {
-    if (rooms[id])
-        return rooms[id];
+  if (rooms[id]) { return rooms[id]; }
 
-    return null;
-}
+  return null;
+};
 
-const getRooms = () => {
-    return rooms;
-}
+const getRooms = () => rooms;
 
 const addPlayer = (roomId) => {
-    let id = getRandomId();
-    while (rooms[roomId].players.includes(id)) {
-        id = getRandomId();
-    }
+  let id = getRandomId();
+  while (rooms[roomId].players.includes(id)) {
+    id = getRandomId();
+  }
 
-    rooms[roomId].players.push({ id, position: { mousePosX: -100, mousePosY: -100 } });
-    return id;
-}
+  rooms[roomId].players.push({ id, position: { mousePosX: -100, mousePosY: -100 } });
+  return id;
+};
 
 const updatePlayerPosition = (roomId, playerId, mousePosX, mousePosY, playerColor) => {
-    const rId = parseInt(roomId);
-    const pId = parseInt(playerId);
+  const rId = parseInt(roomId, 10);
+  const pId = parseInt(playerId, 10);
 
-    const room = rooms[rId];
+  const room = rooms[rId];
 
-    if (room === undefined) {
-        return { type: 404, message: "The room was not found!" };;
-    }
+  if (room === undefined) {
+    return { type: 404, message: 'The room was not found!' };
+  }
 
-    const player = room.players.find((p) => p.id === pId);
+  const player = room.players.find((p) => p.id === pId);
 
-    if (player === undefined) {
-        return { type: 404, message: "The player was not found!" };
-    }
+  if (player === undefined) {
+    return { type: 404, message: 'The player was not found!' };
+  }
 
-    player.position = { mousePosX, mousePosY };
-    player.color = playerColor;
-    return { type: 204, message: "The player was updated sucessfully!" };
-}
+  player.position = { mousePosX, mousePosY };
+  player.color = playerColor;
+  return { type: 204, message: 'The player was updated sucessfully!' };
+};
 
 const getPlayerList = (roomId) => {
-    if (!rooms[roomId])
-        return [];
+  if (!rooms[roomId]) { return []; }
 
-    const room = rooms[roomId];
+  const room = rooms[roomId];
 
-    return room.players;
-}
-
-const getRandomId = () => {
-    return Math.round(Math.random() * 100000)
-}
+  return room.players;
+};
 
 module.exports = {
-    createRoom,
-    getRoom,
-    getRooms,
-    addPlayer,
-    updatePlayerPosition,
-    getPlayerList
+  createRoom,
+  getRoom,
+  getRooms,
+  addPlayer,
+  updatePlayerPosition,
+  getPlayerList,
 };
