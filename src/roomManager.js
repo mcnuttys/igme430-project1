@@ -63,14 +63,14 @@ const cleanPlayerList = (room) => {
   for (let i = players.length - 1; i >= 0; i--) {
     const age = tNow - players[i].lastUpdated;
 
-    let color = players[i];
+    let { color } = players[i];
     const alpha = parseInt(((1 - (age / 5000)) * 255), 10);
     color = color.slice(0, color.length - 2);
     color += (`00${alpha.toString(16)}`).slice(-2);
     players[i].color = color;
 
     if (age >= 5000) {
-      players.splice(i, 1);
+      players[i].position = { mousePosX: -100, mousePosY: -100 };
     }
   }
 };

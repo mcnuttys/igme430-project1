@@ -66,7 +66,9 @@ const loop = () => {
     mouseTimer -= 1 / 60;
     if (mouseTimer <= 0) {
         mouseTimer = 0.1;
-        server.updatePlayer(mousePos);
+
+        if (lastMousePos.x != mousePos.x && lastMousePos.y != mousePos.y)
+            server.updatePlayer(mousePos);
         server.getPlayerList();
     }
 
