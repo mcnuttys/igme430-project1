@@ -1,14 +1,86 @@
 body {
     background-color: black;
+    color: white;
+
+    overflow-x: hidden;
+}
+
+.left {
+    left: -100%;
+    transition-property: left;
+    transition-duration: 0.3s;
+    visibility: collapse;
+}
+
+.right {
+    left: 100%;
+    transition-property: left;
+    transition-duration: 0.3s;
+    visibility: collapse;
+}
+
+.center {
+    left: 0%;
+    transition-property: left;
+    transition-duration: 0.3s;
+    visibility: visible;
+}
+
+#menu {
+    position: absolute;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: space-between;
+}
+
+#menu #roomListHolder {
+    width: 25%;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+    align-content: center;
 
-    color: white;
+    padding: 15px;
+}
+
+#roomListHeader {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#roomList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#loadingRoom {
+    position: absolute;
+    width: 100%;
+}
+
+#createRoom {
+    position: absolute;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #paint {
+    position: absolute;
+    width: 100%;
+
     display: flex;
     flex-direction: row;
     justify-content: center;

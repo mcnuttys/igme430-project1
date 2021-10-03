@@ -7,9 +7,9 @@
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests Completete\"",
-    "nodemon": "nodemon --watch ./src ./src/server.js",
+    "nodemon": "nodemon --watch ./src --watch ./dist ./src/server.js",
     "build": "babel ./client/src --out-file ./hosted/DONT_EDIT_bundle.js",
-    "webpack": "webpack --config ./webpack.config.js"
+    "webpack": "webpack --config ./webpack.config.js --watch ./client/loader.js"
   },
   "repository": {
     "type": "git",

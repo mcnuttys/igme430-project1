@@ -5,8 +5,8 @@ import * as display from "./displayCanvas.js";
 import * as tools from "./tools.js"
 import * as utils from "./utils.js";
 
-const drawingSize = { width: 64, height: 64 };
-const displaySize = { width: 600, height: 600 };
+let drawingSize = { width: 64, height: 64 };
+let displaySize = { width: 600, height: 600 };
 
 let drawingCanvas;
 let displayCanvas;
@@ -20,7 +20,9 @@ let lastMousePos;
 
 let mouseDown = false;
 
-const init = () => {
+const initialize = (canvasSize) => {
+    drawingSize = canvasSize;
+
     // Setup canvases
     drawingCanvas = document.querySelector("#rawimage");
     drawing.initialize(drawingSize.width, drawingSize.height, drawingCanvas);
@@ -78,7 +80,7 @@ const onMouseMove = (e) => {
     };
 };
 
-export { init };
+export { initialize };
 
 
 /*

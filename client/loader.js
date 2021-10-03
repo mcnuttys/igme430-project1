@@ -1,3 +1,3 @@
-import * as main from "./main.js"
+import * as main from "./pageHandler.js"
 
-window.onload = main.init;
+window.onload = main.initialize;
