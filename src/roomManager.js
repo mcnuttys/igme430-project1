@@ -51,14 +51,35 @@ const updatePlayerPosition = (roomId, playerId, mousePosX, mousePosY, playerColo
   }
 
   player.position = { mousePosX, mousePosY };
-  player.color = playerColor;
+  player.color = `${playerColor}FF`;
+  player.lastUpdated = Date.now();
   return { type: 204, message: 'The player was updated sucessfully!' };
+};
+
+const cleanPlayerList = (room) => {
+  const { players } = room;
+
+  const tNow = Date.now();
+  for (let i = players.length - 1; i >= 0; i--) {
+    const age = tNow - players[i].lastUpdated;
+
+    let { color } = players[i];
+    const alpha = parseInt(((1 - (age / 5000)) * 255), 10);
+    color = color.slice(0, color.length - 2);
+    color += (`00${alpha.toString(16)}`).slice(-2);
+    players[i].color = color;
+
+    if (age >= 5000) {
+      players.splice(i, 1);
+    }
+  }
 };
 
 const getPlayerList = (roomId) => {
   if (!rooms[roomId]) { return []; }
 
   const room = rooms[roomId];
+  cleanPlayerList(room);
 
   return room.players;
 };

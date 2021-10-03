@@ -65,7 +65,7 @@ const loop = () => {
 
     mouseTimer -= 1 / 60;
     if (mouseTimer <= 0) {
-        mouseTimer = 0.0;
+        mouseTimer = 0.1;
         server.updatePlayer(mousePos);
         server.getPlayerList();
     }
