@@ -56,6 +56,7 @@ const loop = () => {
 
     if (mouseDown) {
         tools.useTool(mousePos, lastMousePos, displaySize, drawingSize);
+        drawing.applyCanvasData();
     }
 
     if (!mouseDown && changes.notCommited) {

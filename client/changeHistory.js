@@ -67,6 +67,7 @@ const undoChange = () => {
         let change = changes[i];
         drawing.setPixelI(change.pixelIndex, change.fromColor);
     }
+    drawing.applyCanvasData();
 
     totalChanges--;
     isUndoing = false;
@@ -90,6 +91,7 @@ const redoChange = () => {
         let change = changes[i];
         drawing.setPixelI(change.pixelIndex, change.toColor);
     }
+    drawing.applyCanvasData();
 
     totalChanges++;
     isRedoing = false;

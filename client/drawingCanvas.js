@@ -51,8 +51,6 @@ const setPixel = (x, y, color) => {
     pixelData[i + 1] = color.g;
     pixelData[i + 2] = color.b;
     pixelData[i + 3] = color.a;
-
-    ctx.putImageData(canvasData, 0, 0);
 };
 
 const setPixelI = (i, color) => {
@@ -63,8 +61,6 @@ const setPixelI = (i, color) => {
     pixelData[i + 1] = color.g;
     pixelData[i + 2] = color.b;
     pixelData[i + 3] = color.a;
-
-    ctx.putImageData(canvasData, 0, 0);
 };
 
 const getPixel = (x, y) => {
@@ -101,8 +97,12 @@ const setPixels = (x0, y0, x1, y1, color) => {
     }
 };
 
+const applyCanvasData = () => {
+    ctx.putImageData(canvasData, 0, 0);
+}
+
 const convertToPixelIndex = (x, y, width) => {
     return y * (width * 4) + x * 4;
 };
 
-export { initialize, setPixel, setPixelI, getPixel, setPixels, canvas };
+export { initialize, setPixel, setPixelI, getPixel, setPixels, applyCanvasData, canvas };
