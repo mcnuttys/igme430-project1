@@ -58,30 +58,32 @@ const updatePlayerPosition = (roomId, playerId, mousePosX, mousePosY, playerColo
 
 const cleanPlayerList = (room) => {
   const { players } = room;
+  const pList = [];
 
   const tNow = Date.now();
   for (let i = players.length - 1; i >= 0; i--) {
     const age = tNow - players[i].lastUpdated;
+    if (age < 5000) {
+      let { color } = players[i];
+      const alpha = parseInt(((1 - (age / 5000)) * 255), 10);
+      color = color.slice(0, color.length - 2);
+      color += (`00${alpha.toString(16)}`).slice(-2);
+      players[i].color = color;
 
-    let { color } = players[i];
-    const alpha = parseInt(((1 - (age / 5000)) * 255), 10);
-    color = color.slice(0, color.length - 2);
-    color += (`00${alpha.toString(16)}`).slice(-2);
-    players[i].color = color;
-
-    if (age >= 5000) {
-      players[i].position = { mousePosX: -100, mousePosY: -100 };
+      pList.push(players[i]);
     }
   }
+
+  return pList;
 };
 
 const getPlayerList = (roomId) => {
   if (!rooms[roomId]) { return []; }
 
   const room = rooms[roomId];
-  cleanPlayerList(room);
+  const playerList = cleanPlayerList(room);
 
-  return room.players;
+  return playerList;
 };
 
 module.exports = {
