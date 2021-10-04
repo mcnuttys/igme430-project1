@@ -10,6 +10,7 @@ const createRoom = (roomName, canvasSize) => {
     name: roomName,
     canvasSize,
     players: [],
+    changes: []
   };
 
   rooms[room.id] = room;

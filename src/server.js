@@ -8,52 +8,63 @@ const htmlHandler = require('./htmlResponses.js');
 const responseHandler = require('./responses.js');
 
 const urlStruct = {
-  '/': htmlHandler.getIndex,
-  '/styles.css': htmlHandler.getCSS,
-  '/bundle.js': htmlHandler.getBundle,
-  '/roomList': responseHandler.getRooms,
-  '/createRoom': responseHandler.createRoom,
-  '/joinRoom': responseHandler.joinRoom,
-  '/updatePlayer': responseHandler.updatePlayer,
-  '/getPlayers': responseHandler.getPlayers,
-  notFound: responseHandler.notFound,
+    '/': htmlHandler.getIndex,
+    '/styles.css': htmlHandler.getCSS,
+    '/bundle.js': htmlHandler.getBundle,
+    '/roomList': responseHandler.getRooms,
+    '/createRoom': responseHandler.createRoom,
+    '/joinRoom': responseHandler.joinRoom,
+    '/updatePlayer': responseHandler.updatePlayer,
+    '/getPlayers': responseHandler.getPlayers,
+    '/sendChange': responseHandler.addChange,
+    notFound: responseHandler.notFound,
 };
 
 const postHandler = (request, response, parsedUrl) => {
-  const res = response;
+    const res = response;
 
-  const body = [];
+    const body = [];
 
-  request.on('error', (err) => {
-    console.dir(err);
-    res.statusCode = 400;
-    res.end();
-  });
+    request.on('error', (err) => {
+        console.dir(err);
+        res.statusCode = 400;
+        res.end();
+    });
 
-  request.on('data', (chunk) => {
-    body.push(chunk);
-  });
+    request.on('data', (chunk) => {
+        body.push(chunk);
+    });
 
-  request.on('end', () => {
-    const bodyString = Buffer.concat(body).toString();
-    const bodyParams = query.parse(bodyString);
+    request.on('end', () => {
+        console.dir(request.headers['content-type']);
+        if (request.headers['content-type'] === 'application/x-www-form-urlencoded') {
+            console.dir(request.headers['content-type']);
+            const bodyString = Buffer.concat(body).toString();
+            const bodyParams = query.parse(bodyString);
 
-    urlStruct[parsedUrl.pathname](request, response, bodyParams);
-  });
+            urlStruct[parsedUrl.pathname](request, response, bodyParams);
+        }
+
+        if(request.headers['content-type'] === 'application/json') {
+            const content = JSON.parse(body);
+            
+            urlStruct[parsedUrl.pathname](request, response, content);
+        }
+    });
 };
 
 const onRequest = (request, response) => {
-  const parsedUrl = url.parse(request.url, true);
+    const parsedUrl = url.parse(request.url, true);
 
-  if (urlStruct[parsedUrl.pathname]) {
-    if (request.method === 'POST') {
-      postHandler(request, response, parsedUrl);
+    if (urlStruct[parsedUrl.pathname]) {
+        if (request.method === 'POST') {
+            postHandler(request, response, parsedUrl);
+        } else {
+            urlStruct[parsedUrl.pathname](request, response, parsedUrl);
+        }
     } else {
-      urlStruct[parsedUrl.pathname](request, response, parsedUrl);
+        urlStruct.notFound(request, response);
     }
-  } else {
-    urlStruct.notFound(request, response);
-  }
 };
 
 http.createServer(onRequest).listen(port);

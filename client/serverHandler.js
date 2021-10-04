@@ -152,4 +152,13 @@ const joinRoomHandler = (xhr) => {
     }
 }
 
-export { getRoomList, createRoom, joinRoom, updatePlayer, getPlayerList, playerId, playerColor, playerList };
+const sendChange = (change) => {
+    change.roomId = currentRoomId;
+    sendPost("/sendChange", handleChangeResponse, 'application/json', JSON.stringify(change));
+}
+
+const handleChangeResponse = (xhr) => {
+
+}
+
+export { getRoomList, createRoom, joinRoom, updatePlayer, getPlayerList, sendChange, playerId, playerColor, playerList };

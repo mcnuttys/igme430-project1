@@ -154,6 +154,10 @@ const getPlayers = (request, response, parsedUrl) => {
   return respondJSON(request, response, 200, responseJSON);
 };
 
+const addChange = (request, response, body) => {
+
+}
+
 module.exports = {
   notFound,
   createRoom,
@@ -161,4 +165,5 @@ module.exports = {
   joinRoom,
   updatePlayer,
   getPlayers,
+  addChange,
 };

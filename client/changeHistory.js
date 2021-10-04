@@ -1,5 +1,5 @@
 import * as drawing from "./drawingCanvas.js";
-import * as utils from "./utils.js";
+import * as server from "./serverHandler.js";
 
 let changeListOL;
 
@@ -41,12 +41,15 @@ const addPixelChange = (pixelIndex, toColor, fromColor) => {
 const commitChanges = (message) => {
     notCommited = false;
 
-    undoStack.push({ time: Date.now(), changes: currentChanges, changeNumber: totalChanges += 1, message });
+    const change = { time: Date.now(), changes: currentChanges, changeNumber: totalChanges += 1, message };
+
+    undoStack.push(change);
     currentChanges = [];
 
     if (undoStack.length > SAVED_MAX)
         undoStack.shift();
 
+    server.sendChange({ time: change.time, changes: change.changes });
     updateHistoryVisual();
 }
 
