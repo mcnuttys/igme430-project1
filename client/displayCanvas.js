@@ -3,6 +3,8 @@ let ctx;
 
 let size = {};
 
+let lastPlayerListPos = [];
+
 const initialize = (width, height, _canvas) => {
     const dpi = window.devicePixelRatio;
 
@@ -33,12 +35,34 @@ const drawHiddenCanvas = (hiddenCanvas) => {
 };
 
 const drawPlayers = (playerList, currentPlayerId) => {
+    if (lastPlayerListPos.length != playerList.length) {
+        lastPlayerListPos = playerList;
+    }
+
     for (let i = 0; i < playerList.length; i++) {
         if (playerList[i].id != currentPlayerId) {
-            let position = playerList[i].position;
+            let lastX = parseFloat(lastPlayerListPos[i].position.mousePosX);
+            let lastY = parseFloat(lastPlayerListPos[i].position.mousePosY);
+
+            let x = parseFloat(playerList[i].position.mousePosX);
+            let y = parseFloat(playerList[i].position.mousePosY);
+
+            if (lastX < 0) {
+                lastX = x;
+            }
+
+            if (lastY < 0) {
+                lastY = y;
+            }
+
+            let xLerp = (x - lastX) * ((1 / 60.0) * 5);
+            let yLerp = (y - lastY) * ((1 / 60.0) * 5);
             let color = playerList[i].color;
 
-            drawMouse(position.mousePosX, position.mousePosY, color);
+            lastPlayerListPos[i].position.mousePosX = lastX + xLerp;
+            lastPlayerListPos[i].position.mousePosY = lastY + yLerp;
+
+            drawMouse(lastX + xLerp, lastY + yLerp, color);
         }
     }
 }

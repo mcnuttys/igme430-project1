@@ -67,9 +67,10 @@ const loop = () => {
     if (mouseTimer <= 0) {
         mouseTimer = 0.1;
 
-        if (lastMousePos.x != mousePos.x && lastMousePos.y != mousePos.y)
-            server.updatePlayer(mousePos);
         server.getPlayerList();
+
+        if (lastMousePos.x != mousePos.x || lastMousePos.y != mousePos.y)
+            server.updatePlayer(mousePos);
     }
 
     display.drawMouse(mousePos.x, mousePos.y, server.playerColor);
