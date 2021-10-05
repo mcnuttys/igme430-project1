@@ -155,8 +155,55 @@ const getPlayers = (request, response, parsedUrl) => {
 };
 
 const addChange = (request, response, body) => {
+  const { roomId } = body;
+  const { changes } = body;
+  const timeStamp = body.time;
 
-}
+  const responseJSON = {
+    message: 'Successfully added changes',
+  };
+
+  if (roomId === undefined || changes === undefined || timeStamp === undefined) {
+    responseJSON.message = 'The change must contain a roomId, change, and timestamp!';
+    responseJSON.id = 'badRequest';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  const room = roomManager.getRoom(roomId);
+
+  if (room === null) {
+    responseJSON.message = 'The room with this ID does not exist!';
+    responseJSON.id = 'notFound';
+    return respondJSON(request, response, 404, responseJSON);
+  }
+
+  roomManager.addChange(roomId, changes, timeStamp);
+  return respondJSONMeta(request, response, 204);
+};
+
+const getChanges = (request, response, parsedUrl) => {
+  const { query } = parsedUrl;
+  const responseJSON = {
+    message: 'Successfully got changes',
+  };
+
+  if (query.roomId === '') {
+    responseJSON.message = 'You must provide a room ID to get room changes!';
+    responseJSON.id = 'badRequest';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  if (query.timeStamp === undefined) {
+    responseJSON.message = 'You must provide a timestamp to get room changes!';
+    responseJSON.id = 'badRequest';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  const changes = roomManager.getChanges(query.roomId, query.timeStamp);
+  responseJSON.changes = changes;
+
+  return respondJSON(request, response, 200, responseJSON);
+};
 
 module.exports = {
   notFound,
@@ -166,4 +213,5 @@ module.exports = {
   updatePlayer,
   getPlayers,
   addChange,
+  getChanges,
 };

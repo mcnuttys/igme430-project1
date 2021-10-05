@@ -21,6 +21,7 @@ let lastMousePos;
 let mouseDown = false;
 
 let mouseTimer = 0.1;
+let canvasTimer = 0.1;
 
 const initialize = (canvasSize) => {
     drawingSize = canvasSize;
@@ -64,6 +65,7 @@ const loop = () => {
     }
 
     mouseTimer -= 1 / 60;
+    
     if (mouseTimer <= 0) {
         mouseTimer = 0.1;
 
@@ -72,9 +74,15 @@ const loop = () => {
         if (lastMousePos.x != mousePos.x || lastMousePos.y != mousePos.y)
             server.updatePlayer(mousePos);
     }
-
     display.drawMouse(mousePos.x, mousePos.y, server.playerColor);
     display.drawPlayers(server.playerList, server.playerId);
+
+    canvasTimer -= 1 / 60;
+    if(canvasTimer <= 0) {
+        canvasTimer = 0.1;
+
+        server.getChanges();
+    }
 
     lastMousePos = mousePos;
 };

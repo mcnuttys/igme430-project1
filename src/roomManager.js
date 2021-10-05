@@ -10,7 +10,7 @@ const createRoom = (roomName, canvasSize) => {
     name: roomName,
     canvasSize,
     players: [],
-    changes: []
+    changes: [],
   };
 
   rooms[room.id] = room;
@@ -86,6 +86,36 @@ const getPlayerList = (roomId) => {
   return playerList;
 };
 
+const cleanupChanges = (roomId) => {
+  const room = rooms[roomId];
+
+  room.changes.sort((a, b) => a.timestamp > b.timestamp);
+};
+
+const addChange = (roomId, change, timestamp) => {
+  const room = rooms[roomId];
+
+  room.changes.push({ timestamp, change });
+};
+
+const getChanges = (roomId, timestamp) => {
+  const room = rooms[roomId];
+  const changes = [];
+
+  if (room === undefined) { return changes; }
+
+  cleanupChanges(roomId);
+
+  for (let i = 0; i < room.changes.length; i++) {
+    const change = room.changes[i];
+    if (change.timestamp > timestamp) {
+      changes.push(change);
+    }
+  }
+
+  return changes;
+};
+
 module.exports = {
   createRoom,
   getRoom,
@@ -93,4 +123,6 @@ module.exports = {
   addPlayer,
   updatePlayerPosition,
   getPlayerList,
+  addChange,
+  getChanges,
 };

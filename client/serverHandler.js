@@ -1,11 +1,13 @@
 import * as page from "./pageHandler.js";
 import * as colorSelection from "./colorSelection.js";
-import * as utils from "./utils";
+import * as utils from "./utils.js";
+import * as drawingCanvas from "./drawingCanvas.js"
 
 let currentRoomId;
 let playerColor = "#FF00FF";
 let playerId = 0;
 let playerList = [];
+let lastGotChanges;
 
 const sendGet = (url, responseHandler) => {
     const xhr = new XMLHttpRequest();
@@ -158,7 +160,68 @@ const sendChange = (change) => {
 }
 
 const handleChangeResponse = (xhr) => {
-
+    switch (xhr.status) {
+        case 204:
+            // Do nothing I think?
+            break;
+        case 400:
+            page.errorRoomList(obj.message);
+            break;
+        case 404:
+            page.errorRoomList("Something has gone wrong real bad");
+            break;
+        default:
+            page.backToCreateRoom("I dont know what the fork happened here!");
+            break;
+    }
 }
 
-export { getRoomList, createRoom, joinRoom, updatePlayer, getPlayerList, sendChange, playerId, playerColor, playerList };
+const getChanges = () => {
+    if (lastGotChanges === undefined)
+        lastGotChanges = Date.now();
+
+    sendGet("/getChanges?roomId=" + currentRoomId + "&timeStamp=" + lastGotChanges, handleGetChanges);
+}
+
+const handleGetChanges = (xhr) => {
+    const obj = JSON.parse(xhr.response);
+
+    switch (xhr.status) {
+        case 200:
+            let changes = obj.changes;
+
+            if (changes.length > 0)
+                lastGotChanges = changes[changes.length - 1].timeStamp;
+
+            for (let i = 0; i < changes.length; i++) {
+                let change = changes[i].change;
+                for (let j = 0; j < change.length; j++) {
+                    drawingCanvas.setPixelI(change[j].pixelIndex, change[j].toColor);
+                }
+            }
+            drawingCanvas.applyCanvasData();
+            break;
+        case 400:
+            page.errorRoomList(obj.message);
+            break;
+        case 404:
+            page.errorRoomList("Something has gone wrong real bad");
+            break;
+        default:
+            page.backToCreateRoom("I dont know what the fork happened here!");
+            break;
+    }
+}
+
+export {
+    getRoomList,
+    createRoom,
+    joinRoom,
+    updatePlayer,
+    getPlayerList,
+    sendChange,
+    getChanges,
+    playerId,
+    playerColor,
+    playerList
+};
