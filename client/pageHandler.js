@@ -1,5 +1,6 @@
 import * as server from "./serverHandler.js";
 import * as paintHandler from "./paintingHandler.js";
+import * as drawingCanvas from "./drawingCanvas.js";
 
 let menuDiv;
 let loadingDiv;
@@ -74,6 +75,15 @@ const onJoinedRoom = (roomInfo) => {
     paintingDiv.className = "center";
 
     paintHandler.initialize({ width: parseInt(roomInfo.canvasSize), height: parseInt(roomInfo.canvasSize) });
+
+    const changes = roomInfo.changes;
+
+    for (let i = 0; i < changes.length; i++) {
+        let change = changes[i].change;
+        for (let j = 0; j < change.length; j++) {
+            drawingCanvas.setPixelI(change[j].pixelIndex, change[j].toColor);
+        }
+    }
 }
 
 const clickJoinRoom = (id) => {

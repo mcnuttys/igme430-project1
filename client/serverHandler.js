@@ -140,6 +140,10 @@ const joinRoomHandler = (xhr) => {
             playerColor = utils.rgbToHex(colorSelection.asColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255));
             playerId = obj.playerId;
 
+
+            if (obj.room.changes.length > 0)
+                lastGotChanges = obj.room.changes[obj.room.changes.length - 1].timeStamp;
+
             page.onJoinedRoom(obj.room);
             break;
         case 400:
