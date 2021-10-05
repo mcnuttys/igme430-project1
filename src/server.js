@@ -45,7 +45,7 @@ const postHandler = (request, response, parsedUrl) => {
     }
 
     if (request.headers['content-type'] === 'application/json') {
-      const content = JSON.parse(body);
+      const content = JSON.parse(Buffer.concat(body));
 
       urlStruct[parsedUrl.pathname](request, response, content);
     }
