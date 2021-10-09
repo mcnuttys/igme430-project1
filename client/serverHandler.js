@@ -34,9 +34,11 @@ const roomListHandler = (xhr) => {
     switch (xhr.status) {
         case 204:
             return page.errorRoomList("There are no rooms yet!");
+
         case 404:
             page.errorRoomList("For some reason server braindead... Or its creator is...");
             break;
+            
         default:
             page.errorRoomList("I dont know what the fork happened here!");
             break;
@@ -139,7 +141,6 @@ const joinRoomHandler = (xhr) => {
             currentRoomId = obj.room.id;
             playerColor = utils.rgbToHex(colorSelection.asColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255));
             playerId = obj.playerId;
-
 
             if (obj.room.changes.length > 0)
                 lastGotChanges = obj.room.changes[obj.room.changes.length - 1].timeStamp;

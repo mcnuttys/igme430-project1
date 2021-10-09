@@ -8,16 +8,27 @@ const htmlHandler = require('./htmlResponses.js');
 const responseHandler = require('./responses.js');
 
 const urlStruct = {
-  '/': htmlHandler.getIndex,
-  '/styles.css': htmlHandler.getCSS,
-  '/bundle.js': htmlHandler.getBundle,
-  '/roomList': responseHandler.getRooms,
-  '/createRoom': responseHandler.createRoom,
-  '/joinRoom': responseHandler.joinRoom,
-  '/updatePlayer': responseHandler.updatePlayer,
-  '/getPlayers': responseHandler.getPlayers,
-  '/sendChange': responseHandler.addChange,
-  '/getChanges': responseHandler.getChanges,
+  GET: {
+    '/': htmlHandler.getIndex,
+    '/styles.css': htmlHandler.getCSS,
+    '/bundle.js': htmlHandler.getBundle,
+    '/roomList': responseHandler.getRooms,
+    '/joinRoom': responseHandler.joinRoom,
+    '/getPlayers': responseHandler.getPlayers,
+    '/getChanges': responseHandler.getChanges,
+  },
+  HEAD: {
+    '/roomList': responseHandler.getRoomsMeta,
+    '/joinRoom': responseHandler.joinRoomMeta,
+    '/getPlayers': responseHandler.getPlayersMeta,
+    '/getChanges': responseHandler.getChangesMeta,
+  },
+  POST: {
+    '/createRoom': responseHandler.createJoinRoom,
+    '/updatePlayer': responseHandler.updatePlayer,
+    '/sendChange': responseHandler.addChange,
+  },
+
   notFound: responseHandler.notFound,
 };
 
@@ -41,13 +52,13 @@ const postHandler = (request, response, parsedUrl) => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
 
-      urlStruct[parsedUrl.pathname](request, response, bodyParams);
+      urlStruct.POST[parsedUrl.pathname](request, response, bodyParams);
     }
 
     if (request.headers['content-type'] === 'application/json') {
       const content = JSON.parse(Buffer.concat(body));
 
-      urlStruct[parsedUrl.pathname](request, response, content);
+      urlStruct.POST[parsedUrl.pathname](request, response, content);
     }
   });
 };
@@ -55,11 +66,11 @@ const postHandler = (request, response, parsedUrl) => {
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url, true);
 
-  if (urlStruct[parsedUrl.pathname]) {
+  if (urlStruct[request.method] && urlStruct[request.method][parsedUrl.pathname]) {
     if (request.method === 'POST') {
       postHandler(request, response, parsedUrl);
     } else {
-      urlStruct[parsedUrl.pathname](request, response, parsedUrl);
+      urlStruct[request.method][parsedUrl.pathname](request, response, parsedUrl);
     }
   } else {
     urlStruct.notFound(request, response);
@@ -69,45 +80,3 @@ const onRequest = (request, response) => {
 http.createServer(onRequest).listen(port);
 
 console.log(`Listening on 127.0.0.1: ${port}`);
-
-/*
-
---- Back-End code plan! --
-
-server.js
-    onRequest(request, response)
-        - handle responses passing into the urlStruct
-        - differentiate between the accepted headers stuff
-            and talk to either the jsonResponses or xmlResponses
-            although if im careful I might be able to simply get
-            away with at responses and just use a xmlParse thing
-
-htmlResponses.js
-    getIndex()
-        - returns the index
-    getCSS()
-        - returns the css
-    getBundle()
-        - Returns the javascript
-
-jsonResponses.js
-    - TODO!
-
---- Possible Behavior ---
-    To figure out what im doing I am going to quickly set up a chat
-    server.
-
-    Other then that:
-        - CreateRoom(roomName, canvasSizeX, canvasSizeY)
-            - Creates and adds a room to the rooms array, might give it
-                some uuid. Regardless it is going to have the list of changes
-                it recieves and sends back
-        - JoinRoom()
-            - Gets the current drawing which is just what the server sees
-
-        - AddChange(roomId, timestamp, changedPixesl[])
-            - Adds to the given room the changes pixels and gives each the timestamp.
-                Will likely compare the pixel at the position and if this one is newer change it
-                otherwise dont bother.
-
-*/
