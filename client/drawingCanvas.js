@@ -41,7 +41,7 @@ const setPixel = (x, y, color) => {
         return;
 
     let i = convertToPixelIndex(x, y, size.width);
-    changes.addChange(
+    changes.addPixelChange(
         i,
         color,
         colorSelection.asColor(pixelData[i], pixelData[i + 1], pixelData[i + 2], pixelData[i + 3])

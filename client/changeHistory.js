@@ -127,4 +127,4 @@ const updateHistoryVisual = () => {
     }
 }
 
-export { initialize, addPixelChange as addChange, commitChanges, undoChange, redoChange, notCommited }
+export { initialize, addPixelChange, commitChanges, undoChange, redoChange, notCommited }
