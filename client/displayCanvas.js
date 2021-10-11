@@ -5,6 +5,7 @@ let size = {};
 
 let lastPlayerListPos = [];
 
+// Setup the display canvas, with the parameters for the drawing canvas setup such as imageSmoothing
 const initialize = (width, height, _canvas) => {
     const dpi = window.devicePixelRatio;
 
@@ -34,6 +35,8 @@ const drawHiddenCanvas = (hiddenCanvas) => {
     ctx.drawImage(hiddenCanvas, 0, 0, hiddenCanvas.width, hiddenCanvas.height, 0, 0, size.width, size.height);
 };
 
+// Draw all the player mice from the playerList
+// Also do lerp stuff
 const drawPlayers = (playerList, currentPlayerId) => {
     if (lastPlayerListPos.length != playerList.length) {
         lastPlayerListPos = playerList;
@@ -67,6 +70,7 @@ const drawPlayers = (playerList, currentPlayerId) => {
     }
 }
 
+// Draw a mouse at a given position (its just a circle but if I wanted something fancier here it is)
 const drawMouse = (mousePosX, mousePosY, color) => {
     ctx.save();
 

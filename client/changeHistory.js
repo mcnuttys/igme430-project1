@@ -15,6 +15,7 @@ let totalChanges = 0;
 
 const SAVED_MAX = 1000;
 
+// Setup the history stuff
 const initialize = () => {
     const historyDiv = document.querySelector("#historyHolder");
     changeListOL = historyDiv.querySelector("#changes");
@@ -26,6 +27,9 @@ const initialize = () => {
     redoButton.onclick = redoChange;
 }
 
+// Adds a pixel change object to current changes
+// Also clears the redo stack
+// Most of this stuff is probably going to disappear
 const addPixelChange = (pixelIndex, toColor, fromColor) => {
     if (isUndoing)
         return;
@@ -38,6 +42,7 @@ const addPixelChange = (pixelIndex, toColor, fromColor) => {
     notCommited = true;
 }
 
+// Commit current changes to the undo stack and send it too the server
 const commitChanges = (message) => {
     notCommited = false;
 
@@ -53,6 +58,7 @@ const commitChanges = (message) => {
     updateHistoryVisual();
 }
 
+// Pop a change off the undo stack and do its invers, then add it to the redo stack
 const undoChange = () => {
     if (undoStack.length <= 0)
         return;
@@ -77,6 +83,7 @@ const undoChange = () => {
     updateHistoryVisual();
 }
 
+// Pop a change off the redo stack and do it, then add it too the undo stack
 const redoChange = () => {
     if (redoStack.length <= 0)
         return;
@@ -101,6 +108,8 @@ const redoChange = () => {
     updateHistoryVisual();
 }
 
+// Update the histroy visual display.
+// Probably going to be remove but its still kind of cool
 const updateHistoryVisual = () => {
     while (changeListOL.firstChild) {
         changeListOL.removeChild(changeListOL.firstChild);

@@ -7,6 +7,8 @@ let loadingDiv;
 let creatingDiv;
 let paintingDiv;
 
+// Setup all the page stuff, this is essentially what main.js would be.
+// Pretty much just displays changes, and switches between the different states
 const initialize = () => {
     menuDiv = document.querySelector("#menu");
     loadingDiv = document.querySelector("#loadingRoom");
@@ -22,13 +24,7 @@ const initialize = () => {
     server.getRoomList();
 }
 
-const clickCreateNewButton = () => {
-    menuDiv.className = "left";
-    loadingDiv.className = "right";
-    creatingDiv.className = "center";
-    paintingDiv.className = "right";
-}
-
+// Refresh to rooms list
 const clickRefreshRoomList = () => {
     server.getRoomList();
 
@@ -38,6 +34,7 @@ const clickRefreshRoomList = () => {
     }
 }
 
+// Change everything so the main menu state is visible
 const clickReturnToMenu = () => {
     menuDiv.className = "center";
     creatingDiv.className = "right";
@@ -45,6 +42,15 @@ const clickReturnToMenu = () => {
     paintingDiv.className = "right";
 }
 
+// Change everything so the create room state is visible
+const clickCreateNewButton = () => {
+    menuDiv.className = "left";
+    loadingDiv.className = "right";
+    creatingDiv.className = "center";
+    paintingDiv.className = "right";
+}
+
+// Change the state to loading, and send off a create room request
 const clickCreateRoom = () => {
     menuDiv.className = "left";
     loadingDiv.className = "center";
@@ -59,6 +65,7 @@ const clickCreateRoom = () => {
     server.createRoom(roomName, canvasSize);
 }
 
+// if loading fails go back to the createRoom with the error
 const backToCreateRoom = (message) => {
     menuDiv.className = "left";
     loadingDiv.className = "right";
@@ -68,6 +75,7 @@ const backToCreateRoom = (message) => {
     creatingDiv.querySelector("#message").innerText = message;
 }
 
+// When you join a room, switch from loading to painting state, and set everything up
 const onJoinedRoom = (roomInfo) => {
     menuDiv.className = "left";
     loadingDiv.className = "left";
@@ -86,6 +94,7 @@ const onJoinedRoom = (roomInfo) => {
     }
 }
 
+// Joined from main menu, so switch to loading and hide creating
 const clickJoinRoom = (id) => {
     menuDiv.className = "left";
     loadingDiv.className = "center";
@@ -97,10 +106,14 @@ const clickJoinRoom = (id) => {
     server.joinRoom(id);
 }
 
+// Cause of funky things this is just the button click handler
+// I could probably at this point update it but also...
+// It works! Stuff like this is why I wanted a recode :(
 const clickJoinRoomButton = (e) => {
     clickJoinRoom(e.target.name);
 }
 
+// Given a roomList update the rooms list
 const updateRoomList = (roomList) => {
     let roomListHolder = menuDiv.querySelector("#roomList");
     while (roomListHolder.firstChild) {
@@ -123,6 +136,8 @@ const updateRoomList = (roomList) => {
         createButton(roomList[keys[i]].id, roomList[keys[i]].name, roomListHolder);
     }
 }
+
+// Display a room error message in place of the rooms list
 const errorRoomList = (message) => {
     let roomListHolder = menuDiv.querySelector("#roomList");
     while (roomListHolder.firstChild) {
@@ -132,6 +147,8 @@ const errorRoomList = (message) => {
     roomListHolder.innerText = message;
 }
 
+// Funky stuff with creating the rooms list and buttons
+// Just all the stuff required to create a button on the DOM
 const createButton = (name, displayText, holder) => {
     const b = document.createElement('input');
     b.type = "button";

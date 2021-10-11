@@ -23,6 +23,8 @@ let mouseDown = false;
 let mouseTimer = 0.1;
 let canvasTimer = 0.1;
 
+// Setup all the stuff needed for the rooms paint tool
+// The drawingCanvas and the displayCanvas
 const initialize = (canvasSize) => {
     drawingSize = canvasSize;
 
@@ -50,6 +52,7 @@ const initialize = (canvasSize) => {
     loop();
 };
 
+// Just your generic loop, handles when to send mouse updates and get room changes
 const loop = () => {
     requestAnimationFrame(loop);
 

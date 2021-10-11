@@ -1,3 +1,4 @@
+// Clamp a value between the min and max
 const clamp = (value, min, max) => {
     if (value < min)
         value = min;
@@ -8,6 +9,7 @@ const clamp = (value, min, max) => {
     return value;
 }
 
+// Convert a position from one size space to another (Not even sure if this is the correct mathimatical approach but it works!)
 const convertPosFromSizeToSize = (x, y, displaySize, drawingSize) => {
     return {
         x: Math.floor((x / displaySize.width) * drawingSize.width),
@@ -26,6 +28,7 @@ const hexToRgb = (hex) => {
     } : null;
 }
 
+// Do the inverse of the above hexToRgb, comes from the same page
 const rgbToHex = (rgb) => {
     let r = ("00" + rgb.r.toString(16)).slice(-2);
     let g = ("00" + rgb.g.toString(16)).slice(-2);
