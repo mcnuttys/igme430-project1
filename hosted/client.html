@@ -10,14 +10,15 @@
 
 <body>
     <div id="menu" class="center">
-        <h1>Pixel Friend your Art</h1>
+        <h1>Paint Together</h1>
+        <p>Paint with your friends!</p>
         <div>
-            <input type="button" id="createNewRoomButton" name="createNew" value="Create New Room">
+            <input type="button" id="createNewRoomButton" class="button" name="createNew" value="Create New Room">
         </div>
         <div id="roomListHolder">
             <div id="roomListHeader">
                 <h2>Room List</h2>
-                <input type="button" id="refreshRoomListButton" name="refresh" value="Refresh">
+                <input type="button" id="refreshRoomListButton" class="button" name="refresh" value="Refresh">
             </div>
             <br>
             <div id="roomList">
@@ -29,33 +30,43 @@
         <p>Loading...</p>
     </div>
     <div id="createRoom" class="right">
-        <h2>Create New Room</h2>
-        <label for="roomName">Room Name:</label>
-        <input type="text" id="roomName" name="roomName">
-        <label for="canvasSize">Canvas Size:</label>
-        <input type="number" id="canvasSize" name="canvasSize" value="32" max="600" min="1">
-        <input type="button" id="createRoomButton" name="createRoom" value="Create Room">
-        <input type="button" id="returnToMenuButton" name="return" value="Return to menu">
-        <p id="message"></p>
+        <div id="createRoomMenu">
+            <h2>Create New Room</h2>
+            <div>
+                <label for="roomName">Room Name:</label>
+                <input type="text" id="roomName" name="roomName">
+            </div>
+            <div>
+                <label for="canvasSize">Canvas Size:</label>
+                <input type="number" id="canvasSize" name="canvasSize" value="32" max="600" min="1">
+            </div>
+            <input type="button" id="createRoomButton" class="button" name="createRoom" value="Create Room">
+            <input type="button" id="returnToMenuButton" class="button" name="return" value="Return to menu">
+            <p id="message"></p>
+        </div>
     </div>
     <div id="paint" class="right">
         <div id="controls">
-            <div>
-                <label for="color">Selected Color:</label>
-                <input type="color" id="colorPicker" name="colorPicker" value="#000000">
+            <div id="controlsHolder">
+                <h2>Tools</h2>
+                <div>
+                    <label for="color">Selected Color:</label>
+                    <input type="color" id="colorPicker" name="colorPicker" value="#000000">
+                </div>
+                <div>
+                    <label for="eraser">Eraser</label>
+                    <input type="radio" id="eraser" name="toolRadio">
+                </div>
+                <div>
+                    <label for="pencil">Pencil</label>
+                    <input type="radio" id="pencil" name="toolRadio" checked>
+                </div>
+                <div>
+                    <label for="dropper">Dropper</label>
+                    <input type="radio" id="dropper" name="toolRadio">
+                </div>
             </div>
-            <div>
-                <label for="eraser">Eraser</label>
-                <input type="radio" id="eraser" name="toolRadio">
-            </div>
-            <div>
-                <label for="pencil">Pencil</label>
-                <input type="radio" id="pencil" name="toolRadio" checked>
-            </div>
-            <div>
-                <label for="dropper">Dropper</label>
-                <input type="radio" id="dropper" name="toolRadio">
-            </div>
+            <input type="button" id="backToMenu" class="button" name="toMenu" value="Return to menu">
         </div>
         <div id="wrapper">
             <canvas id="rawimage">

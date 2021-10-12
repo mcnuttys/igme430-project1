@@ -21,6 +21,8 @@ const initialize = () => {
     creatingDiv.querySelector("#returnToMenuButton").onclick = clickReturnToMenu;
     creatingDiv.querySelector("#createRoomButton").onclick = clickCreateRoom;
 
+    paintingDiv.querySelector("#backToMenu").onclick = clickReturnToMenu;
+
     server.getRoomList();
 }
 
@@ -48,6 +50,7 @@ const clickCreateNewButton = () => {
     loadingDiv.className = "right";
     creatingDiv.className = "center";
     paintingDiv.className = "right";
+    creatingDiv.style.visibility = "visible";
 }
 
 // Change the state to loading, and send off a create room request
@@ -123,17 +126,17 @@ const updateRoomList = (roomList) => {
     let keys = Object.keys(roomList);
 
     if (keys === undefined) {
-        console.dir("null");
+        console.dir("Room list is broken");
         return;
     }
 
     if (keys.length <= 0) {
-        console.dir("empty");
+        console.dir("Room list is empty for some reason");
         return;
     }
 
     for (let i = 0; i < keys.length; i++) {
-        createButton(roomList[keys[i]].id, roomList[keys[i]].name, roomListHolder);
+        createButton(roomList[keys[i]].id, "Room Name: " + roomList[keys[i]].name + " | Id: " + keys[i], roomListHolder);
     }
 }
 
@@ -154,6 +157,7 @@ const createButton = (name, displayText, holder) => {
     b.type = "button";
     b.id = name;
     b.name = name;
+    b.className = "button"
     b.value = displayText;
     b.onclick = clickJoinRoomButton;
 
